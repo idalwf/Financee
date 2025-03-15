@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'profile_page.dart';
 import 'package:provider/provider.dart';
 import 'theme_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class FinanceHomePage extends StatefulWidget {
   final String username;
@@ -20,6 +22,12 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
   final TextEditingController _descriptionController = TextEditingController();
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
   void _addTransaction(String type) {
     double amount = double.tryParse(_amountController.text) ?? 0.0;
     String description = _descriptionController.text;
@@ -31,7 +39,7 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
             'type': 'Nabung',
             'amount': amount,
             'description': description,
-            'date': DateTime.now(),
+            'date': DateTime.now().toIso8601String(), // Convert to String
           });
         } else if (type == 'Ambil') {
           if (_balance >= amount) {
@@ -40,7 +48,7 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
               'type': 'Ambil',
               'amount': amount,
               'description': description,
-              'date': DateTime.now(),
+              'date': DateTime.now().toIso8601String(), // Convert to String
             });
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -51,7 +59,26 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
       });
       _amountController.clear();
       _descriptionController.clear();
+      _saveData();
     }
+  }
+
+  void _saveData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('balance', _balance);
+    await prefs.setStringList('transactionHistory', _transactionHistory.map((transaction) => jsonEncode(transaction)).toList());
+  }
+
+  void _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _balance = prefs.getDouble('balance') ?? 0.0;
+      _transactionHistory = (prefs.getStringList('transactionHistory') ?? []).map((transaction) {
+        Map<String, dynamic> decoded = jsonDecode(transaction);
+        decoded['date'] = DateTime.parse(decoded['date']); // Convert back to DateTime
+        return decoded;
+      }).toList();
+    });
   }
 
   void _onItemTapped(int index) {
@@ -171,4 +198,3 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
     );
   }
 }
-
