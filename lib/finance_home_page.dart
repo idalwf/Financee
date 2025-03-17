@@ -39,7 +39,7 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
             'type': 'Nabung',
             'amount': amount,
             'description': description,
-            'date': DateTime.now().toIso8601String(), // Convert to String
+            'date': DateTime.now().toIso8601String(), // Simpan sebagai String
           });
         } else if (type == 'Ambil') {
           if (_balance >= amount) {
@@ -48,7 +48,7 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
               'type': 'Ambil',
               'amount': amount,
               'description': description,
-              'date': DateTime.now().toIso8601String(), // Convert to String
+              'date': DateTime.now().toIso8601String(), // Simpan sebagai String
             });
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -75,8 +75,12 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
       _balance = prefs.getDouble('balance') ?? 0.0;
       _transactionHistory = (prefs.getStringList('transactionHistory') ?? []).map((transaction) {
         Map<String, dynamic> decoded = jsonDecode(transaction);
-        decoded['date'] = DateTime.parse(decoded['date']); // Convert back to DateTime
-        return decoded;
+        return {
+          'type': decoded['type'],
+          'amount': decoded['amount'],
+          'description': decoded['description'],
+          'date': decoded['date'], // Simpan tetap sebagai String
+        };
       }).toList();
     });
   }
@@ -191,7 +195,7 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
         final transaction = _transactionHistory[index];
         return ListTile(
           title: Text('${transaction['type']} - ${transaction['description']}'),
-          subtitle: Text(DateFormat('dd MMM yyyy, HH:mm').format(transaction['date'])),
+          subtitle: Text(DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(transaction['date']))),
           trailing: Text('IDR ${NumberFormat('#,##0').format(transaction['amount'])}'),
         );
       },
