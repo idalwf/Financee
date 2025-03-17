@@ -91,45 +91,37 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
     });
   }
 
-  void _navigateToProfile() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProfilePage(username: widget.username, balance: _balance),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Selamat datang, ${widget.username}'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(themeProvider.isDarkMode ? Icons.brightness_3 : Icons.brightness_6),
+            icon: Icon(isDarkMode ? Icons.brightness_3 : Icons.brightness_6, color: isDarkMode ? Colors.white : Colors.black),
             onPressed: () {
               themeProvider.toggleTheme();
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: _navigateToProfile,
-          ),
         ],
       ),
-      body: _selectedIndex == 0 ? _buildWalletPage() : _buildHistoryPage(),
+      body: _selectedIndex == 0 ? _buildWalletPage(isDarkMode) : _selectedIndex == 1 ? _buildHistoryPage(isDarkMode) : ProfilePage(username: widget.username, balance: _balance),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
+            icon: Icon(Icons.account_balance_wallet, color: isDarkMode ? Colors.white : Colors.black),
             label: 'Dompet',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.history),
+            icon: Icon(Icons.history, color: isDarkMode ? Colors.white : Colors.black),
             label: 'Riwayat',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person, color: isDarkMode ? Colors.white : Colors.black),
+            label: 'Profil',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -138,7 +130,7 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
     );
   }
 
-  Widget _buildWalletPage() {
+  Widget _buildWalletPage(bool isDarkMode) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -155,18 +147,26 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
           const SizedBox(height: 20),
           TextField(
             controller: _amountController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Jumlah Uang',
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              prefixIcon: Icon(Icons.attach_money, color: isDarkMode ? Colors.white : Colors.black),
+              contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
           ),
           const SizedBox(height: 10),
           TextField(
             controller: _descriptionController,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Keterangan',
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              prefixIcon: Icon(Icons.description, color: isDarkMode ? Colors.white : Colors.black),
+              contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
             ),
           ),
           const SizedBox(height: 10),
@@ -175,11 +175,25 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () => _addTransaction('Nabung'),
-                child: const Text('Nabung'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent, // Remove background color
+                  shadowColor: Colors.transparent, // Remove shadow
+                ),
+                child: Text(
+                  'Nabung',
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                ),
               ),
               ElevatedButton(
                 onPressed: () => _addTransaction('Ambil'),
-                child: const Text('Ambil'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent, // Remove background color
+                  shadowColor: Colors.transparent, // Remove shadow
+                ),
+                child: Text(
+                  'Ambil',
+                  style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+                ),
               ),
             ],
           ),
@@ -188,12 +202,13 @@ class _FinanceHomePageState extends State<FinanceHomePage> {
     );
   }
 
-  Widget _buildHistoryPage() {
+  Widget _buildHistoryPage(bool isDarkMode) {
     return ListView.builder(
       itemCount: _transactionHistory.length,
       itemBuilder: (context, index) {
         final transaction = _transactionHistory[index];
         return ListTile(
+          leading: transaction['type'] == 'Nabung' ? Icon(Icons.arrow_downward, color: Colors.green) : Icon(Icons.arrow_upward, color: Colors.red),
           title: Text('${transaction['type']} - ${transaction['description']}'),
           subtitle: Text(DateFormat('dd MMM yyyy, HH:mm').format(DateTime.parse(transaction['date']))),
           trailing: Text('IDR ${NumberFormat('#,##0').format(transaction['amount'])}'),
