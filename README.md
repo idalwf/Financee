@@ -19,7 +19,7 @@ You can install the Financee application in two ways:
 
 1. Clone the repository from GitHub:
    ```bash
-   git clone <[repository-url](https://github.com/idalwf/Financee.git)>
+   git clone https://github.com/idalwf/Financee.git
 2. Retrieve all packages
    ```bash
    flutter pub get
