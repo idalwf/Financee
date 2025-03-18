@@ -1,16 +1,29 @@
-# financee
+# Financee
 
-A new Flutter project.
+Financee is a financial management application designed to help users manage their savings effectively. With features that allow users to deposit and withdraw money, Financee makes it easy to keep track of your finances.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **Savings Management**: Effortlessly manage your savings by depositing and withdrawing money.
+- **User-Friendly Interface**: Intuitive design for easy navigation and usage.
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+You can install the Financee application in two ways:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Option 1: Download APK
+
+1. Download the APK from the following link: [Download Financee APK](https://drive.google.com/drive/u/0/folders/10OIBT9TSkgVN_pAlOPkh7j--fpqNdXa8).
+
+### Option 2: Clone the Repository
+
+1. Clone the repository from GitHub:
+   ```bash
+   git clone <[repository-url](https://github.com/idalwf/Financee.git)>
+2. Retrieve all packages
+   ```bash
+   flutter pub get
+3. Run the flutter app
+   ```bash
+   flutter run
+
